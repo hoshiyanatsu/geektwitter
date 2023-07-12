@@ -38,5 +38,27 @@ def create():
         return render_template("new.html")
 
 
+@app.route("/<int:id>/edit", methods=["GET", "POST"])
+def update(id):
+    post = Post.query.get(id)
+    if request.method == "GET":
+        return render_template("edit.html", post=post)
+    else:
+        post.title = request.form.get("title")
+        post.body = request.form.get("body")
+        db.session.commit()
+        return redirect("/")
+
+
+@app.route("/<int:id>/delete", methods=["GET"])
+def delete(id):
+    post = Post.query.get(id)
+    # 投稿を削除
+    db.session.delete(post)
+    # 削除を反映
+    db.session.commit()
+    return redirect("/")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
