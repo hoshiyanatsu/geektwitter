@@ -26,6 +26,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(20), nullable=False)
     body = db.Column(db.String(140), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
 
 class User(UserMixin, db.Model):
@@ -58,7 +59,7 @@ def create():
         # POSTメソッドの時の処理。
         title = request.form.get("title")
         body = request.form.get("body")
-        post = Post(title=title, body=body)
+        post = Post(title=title, body=body, user_id=current_user.id)  # ログイン中のユーザーのIDを取得
         # DBに値を送り保存する
         db.session.add(post)
         db.session.commit()
@@ -87,7 +88,7 @@ def show(id):
     return render_template("show.html", post=post)
 
 
-@app.route("/<int:id>/delete", methods=["POST"])
+@app.route("/<int:id>/delete", methods=["GET"])
 @login_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
@@ -125,9 +126,12 @@ def login():
         password = request.form.get("password")
         # Userテーブルからusernameに一致するユーザを取得
         user = User.query.filter_by(username=username).first()
-        if check_password_hash(user.password, password):
+        if user is not None and check_password_hash(user.password, password):
             login_user(user)
             return redirect("/")
+        else:
+            flash("ユーザ名またはパスワードが正しくありません")
+            return redirect("/login")
     else:
         return render_template("login.html")
 
