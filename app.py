@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect
-
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -27,7 +26,6 @@ def create():
         # POSTメソッドの時の処理。
         title = request.form.get("title")
         body = request.form.get("body")
-
         post = Post(title=title, body=body)
         # DBに値を送り保存する
         db.session.add(post)
@@ -58,6 +56,12 @@ def delete(id):
     # 削除を反映
     db.session.commit()
     return redirect("/")
+
+
+@app.route("/<int:id>/show", methods=["GET"])
+def show(id):
+    post = Post.query.get(id)
+    return render_template("show.html", post=post)
 
 
 if __name__ == "__main__":

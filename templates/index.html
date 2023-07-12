@@ -5,6 +5,7 @@
     {% for post in posts %}
     <div>
         <p>{{post.id}} : <b>{{post.title}}</b> {{post.body}}</p>
+        <a href="{{post.id}}/show">詳細</a>
         <a href="{{post.id}}/edit">編集</a>
         <a href="{{post.id}}/delete">削除</a>
     </div>
