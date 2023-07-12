@@ -1,7 +1,14 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    logout_user,
+    login_required,
+    current_user,
+)
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -32,6 +39,12 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash("このページにアクセスするにはログインが必要です")
+    return redirect(url_for("login"))  # ログインページのエンドポイントを指定
+
+
 @app.route("/")
 def index():
     posts = Post.query.all()
@@ -39,6 +52,7 @@ def index():
 
 
 @app.route("/new", methods=["GET", "POST"])
+@login_required
 def create():
     if request.method == "POST":
         # POSTメソッドの時の処理。
@@ -55,6 +69,7 @@ def create():
 
 
 @app.route("/<int:id>/edit", methods=["GET", "POST"])
+@login_required
 def update(id):
     post = Post.query.get(id)
     if request.method == "GET":
@@ -66,20 +81,24 @@ def update(id):
         return redirect("/")
 
 
-@app.route("/<int:id>/delete", methods=["GET"])
-def delete(id):
-    post = Post.query.get(id)
-    # 投稿を削除
-    db.session.delete(post)
-    # 削除を反映
-    db.session.commit()
-    return redirect("/")
-
-
 @app.route("/<int:id>/show", methods=["GET"])
 def show(id):
     post = Post.query.get(id)
     return render_template("show.html", post=post)
+
+
+@app.route("/<int:id>/delete", methods=["POST"])
+@login_required
+def delete_post(id):
+    post = Post.query.get_or_404(id)
+    # ログインユーザーと投稿作成者を比較
+    if post.user_id == current_user.id:
+        db.session.delete(post)
+        db.session.commit()
+        flash("投稿を削除しました")
+    else:
+        flash("他のユーザーの投稿は削除できません")
+    return redirect("/")
 
 
 @app.route("/signup", methods=["GET", "POST"])

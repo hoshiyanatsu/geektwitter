@@ -3,7 +3,7 @@
     <h1>詳細</h1>
     <div>
         <p>{{ post.id }} : <b>{{ post.title }}</b> {{ post.body }}</p>
-        <a href="{{ post.id }}/edit">編集</a>
-        <a href="{{ post.id }}/delete">削除</a>
+        <a href="{{ url_for('update', id=post.id) }}">編集</a>
+        <a href="{{ url_for('delete_post', id=post.id) }}">削除</a>
     </div>
 {% endblock %}
