@@ -74,7 +74,11 @@ def create():
 def update(id):
     post = Post.query.get(id)
     if request.method == "GET":
-        return render_template("edit.html", post=post)
+        if post.user_id == current_user.id:
+            return render_template("edit.html", post=post)
+        else:
+            flash("投稿者のみ編集できます")
+            return redirect("/")
     else:
         post.title = request.form.get("title")
         post.body = request.form.get("body")
