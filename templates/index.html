@@ -6,6 +6,12 @@
         <p>ログインしていません</p>
     {% endif %}
     <a href="/logout">ログアウト</a>
+    <div class="search">
+        <form>
+            <input type="text" name="search">
+            <input type="submit" value="検索">
+        </form>
+    </div>
     <h1>投稿一覧</h1>
     <a href="/new">新規作成画面</a>
     {% for post in posts %}

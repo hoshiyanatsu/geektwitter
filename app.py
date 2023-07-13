@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from datetime import datetime
 from flask_login import (
     LoginManager,
@@ -48,7 +49,20 @@ def unauthorized():
 
 @app.route("/")
 def index():
-    posts = Post.query.all()
+    text_input = request.args.get("search")
+    if text_input is None or len(text_input) == 0:
+        posts = Post.query.all()
+    else:
+        posts = (
+            db.session.query(Post)
+            .filter(
+                or_(
+                    Post.body.ilike(f"%{text_input}%"),
+                    Post.title.ilike(f"%{text_input}%"),
+                )
+            )
+            .all()
+        )
     return render_template("index.html", posts=posts)
 
 
