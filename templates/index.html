@@ -1,25 +1,26 @@
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 {% extends "layout.html" %}
 {% block content %}
-    {% if current_user.is_authenticated %}
-        <p>ログイン中のアカウント: {{ current_user.username }}</p>
-    {% else %}
-        <p>ログインしていません</p>
-    {% endif %}
-    <a href="/logout">ログアウト</a>
+    <h1>投稿一覧</h1>
     <div class="search">
         <form>
-            <input type="text" name="search">
+            <input type="text" size="25" placeholder="  キーワード検索" name="search">
             <input type="submit" value="検索">
         </form>
     </div>
-    <h1>投稿一覧</h1>
-    <a href="/new">新規作成画面</a>
     {% for post in posts %}
-    <div>
-        <p>{{post.id}} : <b>{{post.title}}</b> {{post.body}}</p>
-        <a href="{{post.id}}/show">詳細</a>
-        <a href="{{post.id}}/edit">編集</a>
-        <a href="{{post.id}}/delete">削除</a>
+    <div class="tweet-content">
+        <div class="content">
+            <p><b>{{post.title}}</b></p>
+            <p>{{post.body}}</p>
+            <p>author : {{post.user.username}}</p>
+        </div>
+        <div class="atag">
+            <div><a href="{{post.id}}/show" class="show-button">詳細</a></div>
+            <div><a href="{{post.id}}/edit" class="edit-button">編集</a></div>
+            <div><a href="{{post.id}}/delete" class="delete-button">削除</a></div>
+        </div>
     </div>
+    <a href="/new" class="to-new-tweet-page">新規作成画面へ</a>
     {% endfor %}
 {% endblock %}
