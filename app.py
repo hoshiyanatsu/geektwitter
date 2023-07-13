@@ -87,6 +87,7 @@ def update(id):
 
 
 @app.route("/<int:id>/show", methods=["GET"])
+@login_required
 def show(id):
     post = Post.query.get(id)
     return render_template("show.html", post=post)
