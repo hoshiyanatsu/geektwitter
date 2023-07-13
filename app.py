@@ -28,6 +28,7 @@ class Post(db.Model):
     title = db.Column(db.String(20), nullable=False)
     body = db.Column(db.String(140), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", backref="posts")
 
 
 class User(UserMixin, db.Model):
